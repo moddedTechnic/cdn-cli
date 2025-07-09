@@ -3,8 +3,8 @@ use std::{path::Path, rc::Rc};
 /// # Usage
 ///
 /// ```sh
-/// cdn [--config CONFIG] register r2 <DOMAIN> <ACCOUNT_ID> <BUCKET_NAME> [--index]
-/// cdn [--config CONFIG] upload [--target DOMAIN] [--mime MIME] [--path PATH] <FILE>
+/// cdn [--config CONFIG] register r2 <DOMAIN> <ACCOUNT_ID> <BUCKET_NAME> [--index] [--default]
+/// cdn [--config CONFIG] upload [--target DOMAIN] [--mime MIME] [--path PATH] [--password] <FILE>
 /// cdn [--config CONFIG] delete [--target DOMAIN] <PATH>
 /// ```
 #[derive(Clone, Debug)]
@@ -31,6 +31,7 @@ pub struct RegisterR2 {
     pub account_id: Rc<str>,
     pub bucket_name: Rc<str>,
     pub index: bool,
+    pub default: bool,
 }
 
 #[derive(Clone, Debug)]
@@ -38,6 +39,7 @@ pub struct Upload {
     pub target: Option<Rc<str>>,
     pub mime: Option<Rc<str>>,
     pub path: Option<Rc<str>>,
+    pub password: bool,
     pub file: Rc<Path>,
 }
 

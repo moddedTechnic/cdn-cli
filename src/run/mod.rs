@@ -2,11 +2,22 @@ pub mod delete;
 pub mod register;
 pub mod upload;
 
+use std::{
+    path::{Path, PathBuf},
+    rc::Rc,
+};
+
 use crate::cli::{Command, SubCommand};
 
 impl Command {
     pub fn run(&self) {
         self.subcommand.run(self)
+    }
+
+    pub fn config_path(&self) -> Rc<Path> {
+        self.config
+            .clone()
+            .unwrap_or(PathBuf::from("~/.cdncli").into())
     }
 }
 
