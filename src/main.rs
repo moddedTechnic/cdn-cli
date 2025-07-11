@@ -7,7 +7,8 @@ use clap::Parser;
 
 use crate::cli::Command;
 
-fn main() {
+#[tokio::main]
+async fn main() {
     let cmd = Command::parse();
-    cmd.run();
+    cmd.run().await;
 }

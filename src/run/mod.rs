@@ -1,6 +1,6 @@
 pub mod delete;
 pub mod list;
-pub mod register;
+pub mod registration;
 pub mod upload;
 
 use std::{
@@ -13,8 +13,8 @@ use resolve_path::PathResolveExt;
 use crate::cli::{Command, SubCommand};
 
 impl Command {
-    pub fn run(&self) {
-        self.subcommand.run(self)
+    pub async fn run(&self) {
+        self.subcommand.run(self).await;
     }
 
     pub fn config_path(&self) -> Arc<Path> {
@@ -27,14 +27,14 @@ impl Command {
 }
 
 impl SubCommand {
-    pub fn run(&self, common: &Command) {
+    pub async fn run(&self, common: &Command) {
         match self {
-            Self::Register { mode } => mode.run(common),
-            Self::Unregister(unreg) => todo!(),
-            Self::Upload(up) => up.run(common),
-            Self::Delete(del) => del.run(common),
+            Self::Register { mode } => mode.run(common).await,
+            Self::Unregister(unreg) => unreg.run(common).await,
+            Self::Upload(up) => up.run(common).await,
+            Self::Delete(del) => del.run(common).await,
             Self::Get(get) => todo!(),
-            Self::List { mode } => mode.run(common),
-        }
+            Self::List { mode } => mode.run(common).await,
+        };
     }
 }

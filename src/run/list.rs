@@ -4,7 +4,7 @@ use crate::{
 };
 
 impl List {
-    pub fn run(&self, common: &Command) {
+    pub async fn run(&self, common: &Command) {
         match self {
             Self::Buckets => self.list_buckets(common),
             Self::Files(files) => todo!(),

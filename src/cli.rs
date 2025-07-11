@@ -45,7 +45,7 @@ pub enum Register {
 
 #[derive(Args, Clone, Debug)]
 pub struct Unregister {
-    domain: Arc<str>,
+    pub domain: Arc<str>,
 }
 
 #[derive(Args, Clone, Debug)]

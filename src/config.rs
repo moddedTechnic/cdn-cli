@@ -1,10 +1,10 @@
+use aws_sdk_s3::config::Credentials;
+use serde::{Deserialize, Serialize};
 use std::{
     fs::File,
     io::{Read, Write},
     path::Path,
 };
-
-use serde::{Deserialize, Serialize};
 
 /// # Example
 ///
@@ -55,6 +55,11 @@ impl Config {
         file.write_all(toml_string.as_bytes())?;
         Ok(())
     }
+
+    pub fn get_bucket(&self, domain: Option<&str>) -> Option<&Bucket> {
+        let domain = domain.or(self.default.as_deref())?;
+        self.buckets.iter().find(|bucket| bucket.domain == domain)
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -65,4 +70,10 @@ pub struct Bucket {
     pub access_key: String,
     pub secret_key: String,
     pub index: bool,
+}
+
+impl Bucket {
+    pub fn get_creds(&self) -> Credentials {
+        Credentials::new(&self.access_key, &self.secret_key, None, None, "r2")
+    }
 }
