@@ -1,4 +1,4 @@
-# cdn_cli
+# CDN CLI
 
 A command-line tool for managing files on a CDN (Content Delivery Network) using S3/R2 buckets as storage backends.
 
