@@ -20,6 +20,9 @@ impl List {
             return;
         };
 
+        if config.buckets.len() == 0 {
+            println!("No buckets found");
+        }
         for bucket in config.buckets {
             println!(
                 "{default}{name} at {url}",
