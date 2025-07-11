@@ -1,3 +1,5 @@
+use rpassword::prompt_password;
+
 use crate::{
     cli::{Command, Register, RegisterR2, Unregister},
     config::{Bucket, Config},
@@ -15,27 +17,18 @@ impl RegisterR2 {
     pub async fn run(&self, common: &Command) {
         let config_path = common.config_path();
         let mut config = if config_path.exists() {
-            println!("Appending to config");
             Config::load(&config_path).expect("Failed to load config")
         } else {
-            println!("Creating config");
             Config::new()
         };
-
-        println!();
-        println!("Registering an R2 bucket: {self:#?}");
-
-        println!();
-        println!("{config:#?}");
 
         let endpoint = format!(
             "https://{account}.r2.cloudflarestorage.com",
             account = self.account_id
         );
 
-        // TODO: use a proper get secret input thing
-        let access_key = "";
-        let secret_key = "";
+        let access_key = prompt_password("Access Key: ").expect("Failed to get key");
+        let secret_key = prompt_password("Secret Key: ").expect("Failed to get key");
 
         let bucket = Bucket {
             domain: self.domain.clone().to_string(),
@@ -50,11 +43,8 @@ impl RegisterR2 {
             config.default = Some(bucket.domain.clone());
         }
         config.buckets.push(bucket);
-
-        println!("Updated config:");
-        println!("{config:#?}");
-
         config.save(&config_path).unwrap();
+        println!("Registered new bucket to {}", self.domain);
     }
 }
 
