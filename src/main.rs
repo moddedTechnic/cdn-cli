@@ -3,39 +3,11 @@ mod config;
 mod run;
 mod state;
 
-use crate::cli::*;
+use clap::Parser;
+
+use crate::cli::Command;
 
 fn main() {
-    let cmd = Command {
-        config: None,
-        subcommand: SubCommand::Register(Register::R2(RegisterR2 {
-            domain: "cdn.example.com".into(),
-            account_id: "example".into(),
-            bucket_name: "cdn".into(),
-            index: false,
-            default: false,
-        })),
-    };
+    let cmd = Command::parse();
     cmd.run();
-
-    // let cmd = Command {
-    //     config: None,
-    //     subcommand: SubCommand::Upload(Upload {
-    //         target: None,
-    //         mime: None,
-    //         path: Some("Cargo.toml".into()),
-    //         password: false,
-    //         file: PathBuf::from("./Cargo.toml").into(),
-    //     }),
-    // };
-    // cmd.run();
-
-    // let cmd = Command {
-    //     config: None,
-    //     subcommand: SubCommand::Delete(Delete {
-    //         target: Some("cdn.example.com".into()),
-    //         path: "Cargo.toml".into(),
-    //     }),
-    // };
-    // cmd.run();
 }

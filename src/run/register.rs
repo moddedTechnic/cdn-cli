@@ -41,11 +41,11 @@ impl RegisterR2 {
         let secret_key = "";
 
         let bucket = Bucket {
-            domain: self.domain.clone(),
+            domain: self.domain.clone().to_string(),
             endpoint: endpoint.into(),
-            bucket: self.bucket_name.clone(),
-            access_key: access_key.into(),
-            secret_key: secret_key.into(),
+            bucket: self.bucket_name.clone().to_string(),
+            access_key: access_key.to_string(),
+            secret_key: secret_key.to_string(),
             index: self.index.clone(),
         };
 

@@ -1,4 +1,10 @@
-use std::{path::Path, rc::Rc};
+use std::{
+    fs::File,
+    io::{Read, Write},
+    path::Path,
+};
+
+use serde::{Deserialize, Serialize};
 
 /// # Example
 ///
@@ -21,9 +27,9 @@ use std::{path::Path, rc::Rc};
 /// secret_key = "..."
 /// index = true
 /// ```
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Config {
-    pub default: Option<Rc<str>>,
+    pub default: Option<String>,
     pub buckets: Vec<Bucket>,
 }
 
@@ -35,44 +41,28 @@ impl Config {
         }
     }
 
-    pub fn load(_path: &Path) -> Option<Self> {
-        todo!("Implement via serde")
+    pub fn load(path: &Path) -> std::io::Result<Self> {
+        let mut file = File::open(path)?;
+        let mut contents = String::new();
+        file.read_to_string(&mut contents)?;
+        Ok(toml::from_str(&contents).expect("Failed to deserialize TOML"))
     }
 
-    pub fn save(&self, _path: &Path) -> Result<(), ()> {
-        // FIXME: swap for serde
-
-        let mut lines = Vec::new();
-        if let Some(ref default) = self.default {
-            lines.push(format!(r#"default = "{default}""#));
-            lines.push("".into());
-        }
-
-        for bucket in &self.buckets {
-            lines.push("[[bucket]]".into());
-            lines.push(format!(r#"domain = "{}""#, bucket.domain));
-            lines.push(format!(r#"endpoint = "{}""#, bucket.endpoint));
-            lines.push(format!(r#"bucket = "{}""#, bucket.bucket));
-            lines.push(format!(r#"access_key = "{}""#, bucket.access_key));
-            lines.push(format!(r#"secret_key = "{}""#, bucket.secret_key));
-            lines.push(format!(r#"index = {}"#, if bucket.index {"true"} else {"false"}));
-            lines.push("".into());
-        }
-
-        let config = lines.join("\n".into());
-        println!("{config}");
-
-        // TODO: save to file
+    pub fn save(&self, path: &Path) -> std::io::Result<()> {
+        println!("Saving to {path:?}");
+        let toml_string = toml::to_string(self).expect("Failed to serialize to TOML");
+        let mut file = File::create(path)?;
+        file.write_all(toml_string.as_bytes())?;
         Ok(())
     }
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct Bucket {
-    pub domain: Rc<str>,
-    pub endpoint: Rc<str>,
-    pub bucket: Rc<str>,
-    pub access_key: Rc<str>,
-    pub secret_key: Rc<str>,
+    pub domain: String,
+    pub endpoint: String,
+    pub bucket: String,
+    pub access_key: String,
+    pub secret_key: String,
     pub index: bool,
 }
