@@ -1,11 +1,12 @@
 use std::{fs::File, io::Read};
 
-use aws_sdk_s3::{Client, config::Region, primitives::ByteStream};
-use uuid::Uuid;
 use crate::{
     cli::{Command, Upload},
     config::Config,
 };
+use aws_sdk_s3::{Client, config::Region, primitives::ByteStream};
+use mime_guess::MimeGuess;
+use uuid::Uuid;
 
 impl Upload {
     pub async fn run(&self, common: &Command) {
@@ -35,15 +36,45 @@ impl Upload {
         let mut buffer = Vec::new();
         file.read_to_end(&mut buffer).unwrap();
 
-        let key = Uuid::new_v4().to_string();
+        let mime = self.mime();
+
+        let uuid = Uuid::new_v4().to_string();
+        let key: &str = self.path.as_deref().unwrap_or(&uuid);
 
         client
             .put_object()
             .bucket(&bucket.bucket)
             .key(key)
             .body(ByteStream::from(buffer))
+            .content_type(mime)
             .send()
             .await
             .expect("Upload failed");
+
+        println!(
+            "Uploaded {file:?} to {bucket:?} at path {path}",
+            file = self.file,
+            bucket = bucket.domain,
+            path = key,
+        );
+    }
+
+    fn mime(&self) -> String {
+        if let Some(ref m) = self.mime {
+            return m.to_string();
+        }
+        if let Some(guess) = MimeGuess::from_path(&self.file).first_raw() {
+            return guess.to_string();
+        }
+        let mut file = File::open(&self.file).unwrap();
+        let mut buffer = [0u8; 512];
+        let n = file.read(&mut buffer).unwrap_or(0);
+        let is_text = std::str::from_utf8(&buffer[..n]).is_ok();
+        if is_text {
+            "text/plain"
+        } else {
+            "application/octet-stream"
+        }
+        .to_string()
     }
 }

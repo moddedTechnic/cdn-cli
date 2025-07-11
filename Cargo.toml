@@ -4,9 +4,9 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-aws-config = "1.8.1"
-aws-sdk-s3 = "1.96.0"
+aws-sdk-s3 = { version = "1.96.0", features = ["behavior-version-latest"] }
 clap = { version = "4.5.41", features = ["derive"] }
+mime_guess = "2.0.5"
 resolve-path = "0.1.0"
 rpassword = "7.4.0"
 serde = { version = "1.0.219", features = ["derive"] }

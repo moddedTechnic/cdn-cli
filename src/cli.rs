@@ -61,10 +61,12 @@ pub struct RegisterR2 {
 
 #[derive(Args, Clone, Debug)]
 pub struct Upload {
+    #[clap(long)]
     pub target: Option<Arc<str>>,
+    #[clap(long)]
     pub mime: Option<Arc<str>>,
+    #[clap(long)]
     pub path: Option<Arc<str>>,
-    pub password: bool,
     pub file: PathBuf,
 }
 
